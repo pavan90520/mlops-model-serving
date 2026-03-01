@@ -1,30 +1,22 @@
 import mlflow
 import pandas as pd
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+# ✅ Use the correct run ID
+RUN_ID = "ab600f979a9d4624bf6f1d6bdce02af9"
 
-# Get latest run ID programmatically
-client = mlflow.tracking.MlflowClient()
-experiment = client.get_experiment_by_name("Default")
-runs = client.search_runs(
-    experiment_ids=[experiment.experiment_id],
-    order_by=["start_time DESC"],
-    max_results=1,
+# Load model directly from mlruns folder
+model = mlflow.sklearn.load_model(
+    f"mlruns/0/{RUN_ID}/artifacts/model"
 )
-
-latest_run_id = runs[0].info.run_id
-
-# Load model from latest run
-model_uri = f"runs:/{latest_run_id}/model"
-model = mlflow.sklearn.load_model(model_uri)
 
 app = FastAPI(title="ML Model Serving API")
 
 
 class PredictionRequest(BaseModel):
     features: list
+
 
 @app.post("/predict")
 def predict(data: PredictionRequest):
