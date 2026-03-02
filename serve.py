@@ -1,15 +1,10 @@
-import mlflow
 import pandas as pd
+import joblib
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# ✅ Use the correct run ID
-RUN_ID = "ab600f979a9d4624bf6f1d6bdce02af9"
-
-# Load model directly from mlruns folder
-model = mlflow.sklearn.load_model(
-    f"mlruns/0/{RUN_ID}/artifacts/model"
-)
+# Load model from project root
+model = joblib.load("model.pkl")
 
 app = FastAPI(title="ML Model Serving API")
 
